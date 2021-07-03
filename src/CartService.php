@@ -6,10 +6,11 @@ namespace Mohammadv184\Cart;
 class CartService
 {
     protected $cart;
-    protected $name=config("cart.name");
+    protected $name="cart";
     public function __construct()
     {
         $this->cart=\Session::get($this->name)??collect([]);
+        $this->name=config("cart.name");
     }
 
     public function put(array $value,$model=null): CartService
