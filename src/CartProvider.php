@@ -13,12 +13,12 @@ class CartProvider extends ServiceProvider
             return new CartService();
         });
 
-        $this->mergeConfigFrom(__DIR__."Config/cart.php","cart");
+        $this->mergeConfigFrom(__DIR__."/Config/cart.php","cart");
     }
 
     public function boot(){
         $this->publishes([
-            __DIR__."Config/cart.php"=>config_path("cart.php")
+            __DIR__."/Config/cart.php"=>config_path("cart.php")
         ],"config");
 
     }
