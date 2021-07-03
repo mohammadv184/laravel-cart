@@ -1,0 +1,12 @@
+{
+    "name": "mohammadv184/laravel-cart",
+    "description": "A Cart for Laravel Framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohammad Abbasi",
+            "email": "mohammad.v184@gmail.com"
+        }
+    ],
+    "require": {}
+}
