@@ -9,11 +9,11 @@ class CartProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->bind("cart",function (){
-            return new CartService();
-        });
-
         $this->mergeConfigFrom(__DIR__."/Config/cart.php","cart");
+
+        $this->app->singleton("cart",function ($app){
+            return new CartService(config("instanceName","cart"),$app["session"]);
+        });
     }
 
     public function boot(){
