@@ -3,102 +3,183 @@
 
 namespace Mohammadv184\Cart;
 
+use Illuminate\Support\Collection;
+
 class CartService
 {
     protected $cart;
-    protected $name="cart";
-    public function __construct()
+    /**
+     * the cart session key
+     *
+     * @var
+     */
+    protected $instanceName="cart";
+    public function __construct($instanceName)
     {
-        $this->name=config("cart.name");
-        $this->cart=\Session::get($this->name)??collect([]);
+        $this->instanceName=$instanceName;
+        $this->cart=\Session::get($this->instanceName)??collect([]);
 
     }
 
-    public function put(array $value,$model=null): CartService
+    /**
+     * put data in cart session
+     *
+     * @param array $value
+     * @param null $model
+     * @return $this
+     */
+    public function put(array $value, $model=null): CartService
     {
         if (! is_null($model)){
-            $value=array_merge($value,[
+            $value=[
                 "id"=>\Str::random(10),
+                "price"=>$value["price"]??0,
+                "quantity"=>$value["quantity"]??0,
                 "cartable_id"=>$model->id,
                 "cartable_type"=>get_class($model)
-            ]);
+            ];
         }else{
-            $value=array_merge($value,[
-                "id"=>\Str::random(10)
-            ]);
+            $value=[
+                "id"=>\Str::random(10),
+                "price"=>$value["price"]??0,
+                "quantity"=>$value["quantity"]??0
+            ];
 
         }
         $this->cart->put($value["id"],$value);
-        \Session::put([$this->name=>$this->cart]);
+        \Session::put([$this->instanceName=>$this->cart]);
         return $this;
-
-
-
     }
-    public function update($value,$key){
+
+    /**
+     * get instance name of the cart
+     *
+     * @return string
+     */
+    public function getInstanceName(): string
+    {
+        return $this->instanceName;
+    }
+
+
+    /**
+     * Update cart values
+     * @param $value
+     * @param $key
+     * @return $this
+     */
+    public function update($value, $key): CartService
+    {
         if(is_numeric($value)){
-            $cart=collect($this->get($key))->except("product");
+            $cart=collect($this->get($key,false));
             if($cart->isEmpty()){
                 return $this;
             }
-            $cart["range"]=$value;
+            $cart["quantity"]=$value;
             $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
-
-            \Session::put([$this->name=>$this->cart]);
-
         }
         else{
-            $cart=collect($this->get($key))->except("product")->merge($value);
+            $cart=collect($this->get($key,false));
             if($cart->isEmpty()){
                 return $this;
             }
+            $cart->merge($value);
             $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
-
-            \session::put([$this->name=>$this->cart]);
         }
-
+        \session::put([$this->instanceName=>$this->cart]);
         return $this;
 
     }
-    public function has($key){
 
+    /**
+     * Check if exists in Cart
+     * @param $key
+     * @return bool
+     */
+    public function has($key): bool
+    {
         return $this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key));
     }
-    public function delete($key){
-        $model=$this->get($key);
-        $this->cart=$this->cart->except($model["id"]);
-        \Session::put([$this->name=>$this->cart]);
+
+    /**
+     * Delete item
+     * @param $key
+     * @return $this
+     */
+    public function delete($key): CartService
+    {
+        $model=collect($this->get($key,false));
+        if ($model->isEmpty()){
+            return $this;
+        }
+        $this->cart=$this->cart->except($model->id);
+        \Session::put([$this->instanceName=>$this->cart]);
+        return $this;
     }
-    public function flush(){
+
+    /**
+     * flush all item in cart
+     * @return $this
+     */
+    public function flush(): CartService
+    {
         $this->cart=collect([]);
-        \Session::put([$this->name=>$this->cart]);
+        \Session::put([$this->instanceName=>$this->cart]);
+        return $this;
     }
-    public function get($id){
-        return $this->withRelationShip($this->cart->where("cartable_id",$id->id)->where("cartable_type",get_class($id))->first());
+
+    /**
+     * get item in cart
+     * @param $id
+     * @param bool $withRelationShip
+     * @return array
+     */
+    public function get($id,bool $withRelationShip=true):array
+    {
+        return $withRelationShip
+            ?$this->withRelationShip($this->cart->where("cartable_id",$id->id)->where("cartable_type",get_class($id))->first())
+            :$this->cart->where("cartable_id",$id->id)->where("cartable_type",get_class($id))->first();
     }
-    public function all(){
-        return $this->cart->map(function ($item){
-            return $this->withRelationShip($item);
-        });
+
+    /**
+     * return all items in cart
+     * @param bool $withRelationShip
+     * @return Collection
+     */
+    public function all(bool $withRelationShip=true):Collection
+    {
+        return $withRelationShip
+            ? $this->cart->map(function ($item){
+                return $this->withRelationShip($item);
+            })
+            :$this->cart;
     }
-    protected function withRelationShip($value){
+
+    /**
+     * return item with Model RelationShip
+     * @param $value
+     * @return array
+     */
+    protected function withRelationShip($value):array
+    {
         if(isset($value["cartable_id"]) && isset($value["cartable_type"])){
             $model=(new $value["cartable_type"])->find($value["cartable_id"]);
 
             $value[strtolower(class_basename($model))]=$model;
-            return $value;
-
         }
         return $value;
 
 
     }
 
-    public function totalPrice()
+    /**
+     * Totla cart price
+     * @return int
+     */
+    public function totalPrice():int
     {
         return $this->all()->sum(function ($item){
-
-            return ($item["product"]->price*$item["range"]);
+            return $item["product"]->price*$item["range"];
         });
     }
 
