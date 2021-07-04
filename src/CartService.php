@@ -2,7 +2,7 @@
 
 
 namespace Mohammadv184\Cart;
-
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 
 class CartService
@@ -14,10 +14,13 @@ class CartService
      * @var
      */
     protected $instanceName="cart";
-    public function __construct($instanceName)
+
+    protected $session;
+    public function __construct($instanceName,$session)
     {
         $this->instanceName=$instanceName;
-        $this->cart=\Session::get($this->instanceName)??collect([]);
+        $this->session=$session;
+        $this->cart=$this->session->get($this->instanceName)??collect([]);
 
     }
 
@@ -32,7 +35,7 @@ class CartService
     {
         if (! is_null($model)){
             $value=[
-                "id"=>\Str::random(10),
+                "id"=>Str::random(10),
                 "price"=>$value["price"]??0,
                 "quantity"=>$value["quantity"]??0,
                 "cartable_id"=>$model->id,
@@ -40,14 +43,14 @@ class CartService
             ];
         }else{
             $value=[
-                "id"=>\Str::random(10),
+                "id"=>Str::random(10),
                 "price"=>$value["price"]??0,
                 "quantity"=>$value["quantity"]??0
             ];
 
         }
         $this->cart->put($value["id"],$value);
-        \Session::put([$this->instanceName=>$this->cart]);
+        $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
     }
 
@@ -113,7 +116,7 @@ class CartService
             return $this;
         }
         $this->cart=$this->cart->except($model->id);
-        \Session::put([$this->instanceName=>$this->cart]);
+        $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
     }
 
@@ -124,7 +127,7 @@ class CartService
     public function flush(): CartService
     {
         $this->cart=collect([]);
-        \Session::put([$this->instanceName=>$this->cart]);
+        $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
     }
 
