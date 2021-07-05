@@ -60,6 +60,17 @@ class CartService
         return $this->instanceName;
     }
 
+    /**
+     * set instance name
+     * @param $instanceName
+     * @return $this
+     */
+    public function instance($instanceName): CartService
+    {
+        $this->instanceName=$instanceName;
+        return $this;
+    }
+
 
     /**
      * Update cart values
@@ -69,23 +80,21 @@ class CartService
      */
     public function update($value, $key): CartService
     {
+        $cart=collect($this->get($key,false));
+        if($cart->isEmpty()){
+            return $this;
+        }
         if(is_numeric($value)){
-            $cart=collect($this->get($key,false));
-            if($cart->isEmpty()){
-                return $this;
-            }
             $cart["quantity"]=$value;
-            $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
+
         }
         else{
-            $cart=collect($this->get($key,false));
-            if($cart->isEmpty()){
-                return $this;
-            }
-            $cart->merge($value);
-            $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
+            $cart=$cart->merge($value);
+
         }
-        \session::put([$this->instanceName=>$this->cart]);
+
+        $this->cart=$this->cart->merge([$cart["id"]=>$cart->toArray()]);
+        $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
 
     }
@@ -97,7 +106,10 @@ class CartService
      */
     public function has($key): bool
     {
-        return $this->cart->contains("id",$key)||($this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key)));
+        return is_object($key)
+            ?$this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key))
+            :$this->cart->contains("id",$key);
+
     }
 
     /**
