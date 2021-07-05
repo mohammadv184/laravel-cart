@@ -19,6 +19,7 @@ use Mohammadv184\Cart\CartService;
  * @method static array get($id,bool $withRelationShip=true)
  * @method static Collection all(bool $withRelationShip=true)
  * @method static int totalPrice()
+ * @method static CartService instance($instanceName)
  *
  * @see \Mohammadv184\Cart\CartService
  */
