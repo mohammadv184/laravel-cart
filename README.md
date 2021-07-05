@@ -6,3 +6,4 @@
 [![License](http://poser.pugx.org/mohammadv184/laravel-cart/license)](https://packagist.org/packages/mohammadv184/laravel-cart)
 
 A Cart for Laravel Framework
+
