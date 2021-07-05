@@ -31,24 +31,20 @@ class CartService
      * @param null $model
      * @return $this
      */
-    public function put(array $value, $model=null): CartService
+    public function put(array $value, $model): CartService
     {
-        if (! is_null($model)){
-            $value=[
-                "id"=>Str::random(10),
-                "price"=>$value["price"]??0,
-                "quantity"=>$value["quantity"]??0,
-                "cartable_id"=>$model->id,
-                "cartable_type"=>get_class($model)
+        if ($this->has($model)) {
+            $this->update($this->get($model, false)["quantity"] + 1, $model);
+        } else {
+            $value = [
+                "id" => $value["id"]??Str::random(10),
+                "price" => $value["price"] ?? 0,
+                "quantity" => $value["quantity"] ?? 0,
+                "cartable_id" => $model->id,
+                "cartable_type" => get_class($model)
             ];
-        }else{
-            $value=[
-                "id"=>Str::random(10),
-                "price"=>$value["price"]??0,
-                "quantity"=>$value["quantity"]??0
-            ];
-
         }
+
         $this->cart->put($value["id"],$value);
         $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
@@ -101,7 +97,7 @@ class CartService
      */
     public function has($key): bool
     {
-        return $this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key));
+        return $this->cart->contains("id",$key)||($this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key)));
     }
 
     /**

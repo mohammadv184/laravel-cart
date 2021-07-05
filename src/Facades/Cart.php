@@ -10,7 +10,7 @@ use Mohammadv184\Cart\CartService;
 
 /**
  * Class Cart
- * @method static CartService put(array $value,$model=null)
+ * @method static CartService put(array $value,$model)
  * @method static string getInstanceName()
  * @method static CartService update($value,$key)
  * @method static CartService has($key)
