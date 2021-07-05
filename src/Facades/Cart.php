@@ -10,7 +10,7 @@ use Mohammadv184\Cart\CartService;
 
 /**
  * Class Cart
- * @method static CartService put(array $value,$model=null)
+ * @method static CartService put(array $value,$model)
  * @method static string getInstanceName()
  * @method static CartService update($value,$key)
  * @method static CartService has($key)
@@ -19,6 +19,7 @@ use Mohammadv184\Cart\CartService;
  * @method static array get($id,bool $withRelationShip=true)
  * @method static Collection all(bool $withRelationShip=true)
  * @method static int totalPrice()
+ * @method static CartService instance($instanceName)
  *
  * @see \Mohammadv184\Cart\CartService
  */

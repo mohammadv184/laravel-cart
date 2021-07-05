@@ -31,24 +31,20 @@ class CartService
      * @param null $model
      * @return $this
      */
-    public function put(array $value, $model=null): CartService
+    public function put(array $value, $model): CartService
     {
-        if (! is_null($model)){
-            $value=[
-                "id"=>Str::random(10),
-                "price"=>$value["price"]??0,
-                "quantity"=>$value["quantity"]??0,
-                "cartable_id"=>$model->id,
-                "cartable_type"=>get_class($model)
+        if ($this->has($model)) {
+            $this->update($this->get($model, false)["quantity"] + 1, $model);
+        } else {
+            $value = [
+                "id" => $value["id"]??Str::random(10),
+                "price" => $value["price"] ?? 0,
+                "quantity" => $value["quantity"] ?? 0,
+                "cartable_id" => $model->id,
+                "cartable_type" => get_class($model)
             ];
-        }else{
-            $value=[
-                "id"=>Str::random(10),
-                "price"=>$value["price"]??0,
-                "quantity"=>$value["quantity"]??0
-            ];
-
         }
+
         $this->cart->put($value["id"],$value);
         $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
@@ -64,6 +60,17 @@ class CartService
         return $this->instanceName;
     }
 
+    /**
+     * set instance name
+     * @param $instanceName
+     * @return $this
+     */
+    public function instance($instanceName): CartService
+    {
+        $this->instanceName=$instanceName;
+        return $this;
+    }
+
 
     /**
      * Update cart values
@@ -73,23 +80,21 @@ class CartService
      */
     public function update($value, $key): CartService
     {
+        $cart=collect($this->get($key,false));
+        if($cart->isEmpty()){
+            return $this;
+        }
         if(is_numeric($value)){
-            $cart=collect($this->get($key,false));
-            if($cart->isEmpty()){
-                return $this;
-            }
             $cart["quantity"]=$value;
-            $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
+
         }
         else{
-            $cart=collect($this->get($key,false));
-            if($cart->isEmpty()){
-                return $this;
-            }
-            $cart->merge($value);
-            $this->cart=$this->cart->merge([$cart["id"]=>$cart]);
+            $cart=$cart->merge($value);
+
         }
-        \session::put([$this->instanceName=>$this->cart]);
+
+        $this->cart=$this->cart->merge([$cart["id"]=>$cart->toArray()]);
+        $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
 
     }
@@ -101,7 +106,10 @@ class CartService
      */
     public function has($key): bool
     {
-        return $this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key));
+        return is_object($key)
+            ?$this->cart->contains("cartable_id",$key->id) && $this->cart->contains("cartable_type",get_class($key))
+            :$this->cart->contains("id",$key);
+
     }
 
     /**
