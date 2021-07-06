@@ -7,6 +7,9 @@ use Illuminate\Support\Collection;
 
 class CartService
 {
+    /**
+     * @var Collection
+     */
     protected $cart;
     /**
      * the cart session key
@@ -15,6 +18,9 @@ class CartService
      */
     protected $instanceName="cart";
 
+    /**
+     * @var
+     */
     protected $session;
     public function __construct($instanceName,$session)
     {
@@ -34,7 +40,8 @@ class CartService
     public function put(array $value, $model): CartService
     {
         if ($this->has($model)) {
-            $this->update($this->get($model, false)["quantity"] + 1, $model);
+            return $this->update($this->get($model, false)["quantity"] + 1, $model);
+
         } else {
             $value = [
                 "id" => $value["id"]??Str::random(10),
@@ -86,14 +93,15 @@ class CartService
         }
         if(is_numeric($value)){
             $cart["quantity"]=$value;
-
         }
         else{
+
+            $this->cart->forget($cart["id"]);
             $cart=$cart->merge($value);
 
         }
 
-        $this->cart=$this->cart->merge([$cart["id"]=>$cart->toArray()]);
+        $this->cart->put($cart["id"],$cart->toArray());
         $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
 
@@ -123,7 +131,7 @@ class CartService
         if ($model->isEmpty()){
             return $this;
         }
-        $this->cart=$this->cart->except($model->id);
+        $this->cart->forget($model["id"]);
         $this->session->put([$this->instanceName=>$this->cart]);
         return $this;
     }
@@ -147,6 +155,11 @@ class CartService
      */
     public function get($id,bool $withRelationShip=true):array
     {
+        if (!is_object($id)){
+            return $withRelationShip
+                ?$this->withRelationShip($this->cart->where("id",$id)->first())
+                :$this->cart->where("id",$id)->first();
+        }
         return $withRelationShip
             ?$this->withRelationShip($this->cart->where("cartable_id",$id->id)->where("cartable_type",get_class($id))->first())
             :$this->cart->where("cartable_id",$id->id)->where("cartable_type",get_class($id))->first();
@@ -190,7 +203,7 @@ class CartService
     public function totalPrice():int
     {
         return $this->all()->sum(function ($item){
-            return $item["product"]->price*$item["range"];
+            return $item["price"]*$item["quantity"];
         });
     }
 
