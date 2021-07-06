@@ -6,9 +6,17 @@
 
 class ModelMock
 {
+    /**
+     * @var int
+     */
     public $id=1;
 
-    public function find(){
+    /**
+     * @param $key
+     * @return $this
+     */
+    public function find($key){
+        $this->id=$key;
         return $this;
     }
 
