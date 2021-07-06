@@ -12,7 +12,7 @@ class CartProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__."/Config/cart.php","cart");
 
         $this->app->singleton("cart",function ($app){
-            return new CartService(config("instanceName","cart"),$app["session"]);
+            return new CartService(config("cart.instanceName","cart"),$app["session"]);
         });
     }
 
