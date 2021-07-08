@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.com/mohammadv184/laravel-cart.svg?branch=main)](https://travis-ci.com/mohammadv184/laravel-cart)
 [![License](http://poser.pugx.org/mohammadv184/laravel-cart/license)](https://packagist.org/packages/mohammadv184/laravel-cart)
 
-A Cart for Laravel Framework
+A Shoping Cart for Laravel Framework
 
 ## Installation
 
