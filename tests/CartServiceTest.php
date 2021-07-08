@@ -1,13 +1,12 @@
 <?php
 
-
 use Mohammadv184\Cart\CartService;
 use PHPUnit\Framework\TestCase;
-require_once __DIR__."/helpers/SessionMock.php";
-require_once __DIR__."/helpers/ModelMock.php";
+
+require_once __DIR__.'/helpers/SessionMock.php';
+require_once __DIR__.'/helpers/ModelMock.php';
 class CartServiceTest extends TestCase
 {
-
     /**
      * @var CartService
      */
@@ -18,262 +17,256 @@ class CartServiceTest extends TestCase
      */
     protected $model;
 
-
     /**
-     *setup test method
+     *setup test method.
      */
     protected function setUp(): void
     {
-
-        $this->cart=new CartService("cart",new SessionMock());
-        $this->model=new ModelMock();
-
+        $this->cart = new CartService('cart', new SessionMock());
+        $this->model = new ModelMock();
     }
 
     /**
-     *test Cart put method
+     *test Cart put method.
      */
     public function testPut()
     {
         $this->cart->put([
-            "id"=>"test",
-            "quantity"=>1,
-            "price"=>1000
-        ],$this->model);
-        $this->assertEquals(1,$this->cart->all(false)->count(),"Cart should have 1 item on it");
+            'id'      => 'test',
+            'quantity'=> 1,
+            'price'   => 1000,
+        ], $this->model);
+        $this->assertEquals(1, $this->cart->all(false)->count(), 'Cart should have 1 item on it');
         $this->assertEquals([
-            "id"=>"test",
-            "quantity"=>1,
-            "price"=>1000,
-            "cartable_type"=>get_class($this->model),
-            "cartable_id"=>1,
-            "modelmock"=>$this->model
-        ],$this->cart->get($this->model));
-        $this->assertTrue($this->cart->has("test"));
+            'id'           => 'test',
+            'quantity'     => 1,
+            'price'        => 1000,
+            'cartable_type'=> get_class($this->model),
+            'cartable_id'  => 1,
+            'modelmock'    => $this->model,
+        ], $this->cart->get($this->model));
+        $this->assertTrue($this->cart->has('test'));
         $this->assertTrue($this->cart->has($this->model));
     }
 
     /**
-     *test Cart Instance method
+     *test Cart Instance method.
      */
-    public function testInstance(){
-        $this->cart->instance("test");
-        $this->assertEquals("test",$this->cart->getInstanceName());
+    public function testInstance()
+    {
+        $this->cart->instance('test');
+        $this->assertEquals('test', $this->cart->getInstanceName());
 
-        $this->cart->instance("shop");
-        $this->assertEquals("shop",$this->cart->getInstanceName());
+        $this->cart->instance('shop');
+        $this->assertEquals('shop', $this->cart->getInstanceName());
 
-        $this->cart->instance("!QAZ1qaz");
-        $this->assertEquals("!QAZ1qaz",$this->cart->getInstanceName());
-
-
+        $this->cart->instance('!QAZ1qaz');
+        $this->assertEquals('!QAZ1qaz', $this->cart->getInstanceName());
     }
 
     /**
-     *test Cart Update method
+     *test Cart Update method.
      */
-    public function testUpdate(){
+    public function testUpdate()
+    {
         $this->cart->put([
-            "id"=>"test",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
-        $this->cart->update(950,$this->model);
+            'id'      => 'test',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
+        $this->cart->update(950, $this->model);
         $this->assertEquals([
-            "id"=>"test",
-            "quantity"=>950,
-            "price"=>1000,
-            'cartable_id' => 1,
-            'cartable_type' => 'ModelMock'
-        ],$this->cart->get($this->model,false));
+            'id'            => 'test',
+            'quantity'      => 950,
+            'price'         => 1000,
+            'cartable_id'   => 1,
+            'cartable_type' => 'ModelMock',
+        ], $this->cart->get($this->model, false));
 
         $this->cart->update([
-            "id"=>"test2",
-            "quantity"=>960,
-            "price"=>0
-        ],$this->model);
+            'id'      => 'test2',
+            'quantity'=> 960,
+            'price'   => 0,
+        ], $this->model);
 
         $this->assertEquals([
-            "id"=>"test2",
-            "quantity"=>960,
-            "price"=>0,
-            'cartable_id' => 1,
-            'cartable_type' => 'ModelMock'
-        ],$this->cart->get($this->model,false));
-
+            'id'            => 'test2',
+            'quantity'      => 960,
+            'price'         => 0,
+            'cartable_id'   => 1,
+            'cartable_type' => 'ModelMock',
+        ], $this->cart->get($this->model, false));
     }
 
     /**
-     *test Cart Has method
+     *test Cart Has method.
      */
-    public function testHas(){
+    public function testHas()
+    {
         $this->cart->put([
-            "id"=>"test",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
+            'id'      => 'test',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
         $this->assertTrue($this->cart->has($this->model));
 
+        $this->assertTrue($this->cart->has('test'));
 
-        $this->assertTrue($this->cart->has("test"));
+        $this->assertFalse($this->cart->has('test2'));
 
-        $this->assertFalse($this->cart->has("test2"));
-
-        $this->model->id=2;
+        $this->model->id = 2;
         $this->assertFalse($this->cart->has($this->model));
-
     }
 
     /**
-     *test Cart Delete method
+     *test Cart Delete method.
      */
-    public function testDelete(){
+    public function testDelete()
+    {
         $this->cart->put([
-            "id"=>"test",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
+            'id'      => 'test',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
 
-        $this->assertEquals(1,$this->cart->all(false)->count());
+        $this->assertEquals(1, $this->cart->all(false)->count());
 
-        $this->cart->delete("test");
+        $this->cart->delete('test');
 
-        $this->assertEquals(0,$this->cart->all(false)->count());
-
+        $this->assertEquals(0, $this->cart->all(false)->count());
     }
 
     /**
-     *test Cart Flush method
+     *test Cart Flush method.
      */
-    public function testFlush(){
+    public function testFlush()
+    {
         $this->cart->put([
-            "id"=>"test1",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
-        $this->model->id=2;
+            'id'      => 'test1',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
+        $this->model->id = 2;
         $this->cart->put([
-            "id"=>"test2",
-            "quantity"=>9508,
-            "price"=>384
-        ],$this->model);
-        $this->model->id=3;
+            'id'      => 'test2',
+            'quantity'=> 9508,
+            'price'   => 384,
+        ], $this->model);
+        $this->model->id = 3;
         $this->cart->put([
-            "id"=>"test3",
-            "quantity"=>50,
-            "price"=>1
-        ],$this->model);
+            'id'      => 'test3',
+            'quantity'=> 50,
+            'price'   => 1,
+        ], $this->model);
 
-        $this->assertEquals(3,$this->cart->all()->count());
+        $this->assertEquals(3, $this->cart->all()->count());
 
         $this->cart->flush();
 
-        $this->assertEquals(0,$this->cart->all()->count());
-
+        $this->assertEquals(0, $this->cart->all()->count());
     }
 
     /**
-     *test Cart Get method
+     *test Cart Get method.
      */
-    public function testGet(){
+    public function testGet()
+    {
         $this->cart->put([
-            "id"=>"test1",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
-        $this->model->id=2;
+            'id'      => 'test1',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
+        $this->model->id = 2;
         $this->cart->put([
-            "id"=>"test2",
-            "quantity"=>9508,
-            "price"=>384
-        ],$this->model);
-        $this->model->id=3;
+            'id'      => 'test2',
+            'quantity'=> 9508,
+            'price'   => 384,
+        ], $this->model);
+        $this->model->id = 3;
         $this->cart->put([
-            "id"=>"test3",
-            "quantity"=>50,
-            "price"=>1
-        ],$this->model);
+            'id'      => 'test3',
+            'quantity'=> 50,
+            'price'   => 1,
+        ], $this->model);
 
         $this->assertEquals([
-            "id"=>"test3",
-            "quantity"=>50,
-            "price"=>1,
-            'cartable_id' => 3,
-            'cartable_type' => 'ModelMock'
-        ],$this->cart->get("test3",false));
-        $this->model->id=2;
-        $this->assertEquals([
-            "id"=>"test2",
-            "quantity"=>9508,
-            "price"=>384,
-            'cartable_id' => 2,
+            'id'            => 'test3',
+            'quantity'      => 50,
+            'price'         => 1,
+            'cartable_id'   => 3,
             'cartable_type' => 'ModelMock',
-            "modelmock"=>$this->model
+        ], $this->cart->get('test3', false));
+        $this->model->id = 2;
+        $this->assertEquals([
+            'id'            => 'test2',
+            'quantity'      => 9508,
+            'price'         => 384,
+            'cartable_id'   => 2,
+            'cartable_type' => 'ModelMock',
+            'modelmock'     => $this->model,
 
-        ],$this->cart->get("test2"));
-
-
+        ], $this->cart->get('test2'));
     }
 
     /**
-     *test Cart All method
+     *test Cart All method.
      */
-    public function testAll(){
+    public function testAll()
+    {
         $this->cart->put([
-            "id"=>"test1",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
-        $this->model->id=2;
+            'id'      => 'test1',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
+        $this->model->id = 2;
         $this->cart->put([
-            "id"=>"test2",
-            "quantity"=>9508,
-            "price"=>384
-        ],$this->model);
-        $this->model->id=3;
+            'id'      => 'test2',
+            'quantity'=> 9508,
+            'price'   => 384,
+        ], $this->model);
+        $this->model->id = 3;
         $this->cart->put([
-            "id"=>"test3",
-            "quantity"=>50,
-            "price"=>1
-        ],$this->model);
+            'id'      => 'test3',
+            'quantity'=> 50,
+            'price'   => 1,
+        ], $this->model);
 
-        $this->assertEquals(3,$this->cart->all()->count());
+        $this->assertEquals(3, $this->cart->all()->count());
 
         $this->assertEquals([
-            'id' => 'test3',
-            'price' => 1,
-            'quantity' => 50,
-            'cartable_id' => 3,
+            'id'            => 'test3',
+            'price'         => 1,
+            'quantity'      => 50,
+            'cartable_id'   => 3,
             'cartable_type' => 'ModelMock',
-            'modelmock'=>$this->model
+            'modelmock'     => $this->model,
 
-        ],$this->cart->all()["test3"]);
-
+        ], $this->cart->all()['test3']);
     }
 
     /**
-     *test Cart TotalPrice method
+     *test Cart TotalPrice method.
      */
-    public function testTotalPrice(){
+    public function testTotalPrice()
+    {
         $this->cart->put([
-            "id"=>"test1",
-            "quantity"=>10000,
-            "price"=>1000
-        ],$this->model);
-        $this->model->id=2;
+            'id'      => 'test1',
+            'quantity'=> 10000,
+            'price'   => 1000,
+        ], $this->model);
+        $this->model->id = 2;
         $this->cart->put([
-            "id"=>"test2",
-            "quantity"=>9508,
-            "price"=>215
-        ],$this->model);
-        $this->model->id=3;
+            'id'      => 'test2',
+            'quantity'=> 9508,
+            'price'   => 215,
+        ], $this->model);
+        $this->model->id = 3;
         $this->cart->put([
-            "id"=>"test3",
-            "quantity"=>50,
-            "price"=>8000
-        ],$this->model);
+            'id'      => 'test3',
+            'quantity'=> 50,
+            'price'   => 8000,
+        ], $this->model);
 
-        $this->assertEquals(12444220,$this->cart->totalPrice());
-
+        $this->assertEquals(12444220, $this->cart->totalPrice());
     }
 }

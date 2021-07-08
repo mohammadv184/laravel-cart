@@ -1,23 +1,21 @@
 <?php
 
-
-
-
-
 class ModelMock
 {
     /**
      * @var int
      */
-    public $id=1;
+    public $id = 1;
 
     /**
      * @param $key
+     *
      * @return $this
      */
-    public function find($key){
-        $this->id=$key;
+    public function find($key)
+    {
+        $this->id = $key;
+
         return $this;
     }
-
 }
