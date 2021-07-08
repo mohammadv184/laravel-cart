@@ -24,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Mohammadv184\\Cart\\CartProvider"
+                "Mohammadv184\\Cart\\CartServiceProvider"
             ],
             "aliases": {
                 "Cart": "Mohammadv184\\Cart\\Facades\\Cart"

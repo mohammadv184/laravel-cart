@@ -4,7 +4,7 @@ namespace Mohammadv184\Cart;
 
 use Illuminate\Support\ServiceProvider;
 
-class CartProvider extends ServiceProvider
+class CartServiceProvider extends ServiceProvider
 {
     public function register()
     {
