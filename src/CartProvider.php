@@ -19,8 +19,7 @@ class CartProvider extends ServiceProvider
     public function boot(){
         $this->publishes([
             __DIR__."/Config/cart.php"=>config_path("cart.php")
-        ],"config");
-
+        ],"cart-config");
     }
 
 }

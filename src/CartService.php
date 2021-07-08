@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 class CartService
 {
     /**
+     * the cart items
      * @var Collection
      */
     protected $cart;
@@ -19,9 +20,12 @@ class CartService
     protected $instanceName="cart";
 
     /**
+     * the cart session
      * @var
      */
     protected $session;
+
+
     public function __construct($instanceName,$session)
     {
         $this->instanceName=$instanceName;
@@ -33,27 +37,24 @@ class CartService
     /**
      * put data in cart session
      *
-     * @param array $value
+     * @param array $item
      * @param null $model
      * @return $this
      */
-    public function put(array $value, $model): CartService
+    public function put(array $item, $model): CartService
     {
         if ($this->has($model)) {
             return $this->update($this->get($model, false)["quantity"] + 1, $model);
-
-        } else {
-            $value = [
-                "id" => $value["id"]??Str::random(10),
-                "price" => $value["price"] ?? 0,
-                "quantity" => $value["quantity"] ?? 0,
-                "cartable_id" => $model->id,
-                "cartable_type" => get_class($model)
-            ];
         }
-
-        $this->cart->put($value["id"],$value);
-        $this->session->put([$this->instanceName=>$this->cart]);
+        $item = [
+            "id" => $item["id"]??Str::random(10),
+            "price" => $item["price"] ?? 0,
+            "quantity" => $item["quantity"] ?? 0,
+            "cartable_id" => $model->id,
+            "cartable_type" => get_class($model)
+        ];
+        $this->cart->put($item["id"], $item);
+        $this->save();
         return $this;
     }
 
@@ -87,22 +88,19 @@ class CartService
      */
     public function update($value, $key): CartService
     {
-        $cart=collect($this->get($key,false));
-        if($cart->isEmpty()){
+        $item=collect($this->get($key,false));
+        if($item->isEmpty()){
             return $this;
         }
         if(is_numeric($value)){
-            $cart["quantity"]=$value;
+            $item["quantity"]=$value;
         }
         else{
-
-            $this->cart->forget($cart["id"]);
-            $cart=$cart->merge($value);
-
+            $this->cart->forget($item["id"]);
+            $item=$item->merge($value);
         }
-
-        $this->cart->put($cart["id"],$cart->toArray());
-        $this->session->put([$this->instanceName=>$this->cart]);
+        $this->cart->put($item["id"], $item->toArray());
+        $this->save();
         return $this;
 
     }
@@ -127,12 +125,12 @@ class CartService
      */
     public function delete($key): CartService
     {
-        $model=collect($this->get($key,false));
-        if ($model->isEmpty()){
+        $item=collect($this->get($key,false));
+        if ($item->isEmpty()){
             return $this;
         }
-        $this->cart->forget($model["id"]);
-        $this->session->put([$this->instanceName=>$this->cart]);
+        $this->cart->forget($item["id"]);
+        $this->save();
         return $this;
     }
 
@@ -143,7 +141,7 @@ class CartService
     public function flush(): CartService
     {
         $this->cart=collect([]);
-        $this->session->put([$this->instanceName=>$this->cart]);
+        $this->save();
         return $this;
     }
 
@@ -205,6 +203,14 @@ class CartService
         return $this->all()->sum(function ($item){
             return $item["price"]*$item["quantity"];
         });
+    }
+
+    /**
+     * save value in cart and session
+     */
+    protected function save(): void
+    {
+        $this->session->put([$this->instanceName => $this->cart]);
     }
 
 }
