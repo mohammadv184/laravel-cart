@@ -34,7 +34,15 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
-            ?$this->storage->all()
+            ?$this->storage->all()->mapWithKeys(function ($item) {
+                return [
+                    'id'            => $item['id'],
+                    'price'         => $item['price'],
+                    'quantity'      => $item['quantity'],
+                    'cartable_id'   => $item["cartable_id"],
+                    'cartable_type' => $item["cartable_type"],
+                ];
+            })
             :$this->storage->get($this->instanceName) ?? collect([]);
     }
 
@@ -255,16 +263,17 @@ class CartService
                             "cartable_type"=>$item["cartable_type"]
                             ]
                         );
+                    } else {
+                        $this->storage->create(
+                            [
+                            "rowId"=>$item["id"],
+                            "price"=>$item["price"],
+                            "quantity"=>$item["quantity"],
+                            "cartable_id"=>$item["cartable_id"],
+                            "cartable_type"=>$item["cartable_type"]
+                            ]
+                        );
                     }
-                    $this->storage->create(
-                        [
-                        "rowId"=>$item["id"],
-                        "price"=>$item["price"],
-                        "quantity"=>$item["quantity"],
-                        "cartable_id"=>$item["cartable_id"],
-                        "cartable_type"=>$item["cartable_type"]
-                        ]
-                    );
                 }
             );
         } else {
