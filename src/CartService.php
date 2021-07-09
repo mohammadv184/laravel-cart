@@ -35,16 +35,15 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
-            ? $this->storage->all()->mapWithKeys(function ($item) {
-                if ($item["user_id"]==\Auth::user()->id) {
-                    return [$item['rowId'] => [
-                        'id' => $item['rowId'],
-                        'price' => $item['price'],
-                        'quantity' => $item['quantity'],
-                        'cartable_id' => $item['cartable_id'],
-                        'cartable_type' => $item['cartable_type'],
-                    ]];
-                }
+            ? $this->storage->all()->where("user_id", \Auth::user()->id)->mapWithKeys(function ($item) {
+
+                return [$item['rowId'] => [
+                    'id' => $item['rowId'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'cartable_id' => $item['cartable_id'],
+                    'cartable_type' => $item['cartable_type'],
+                ]];
             })
             : $this->storage->get($this->instanceName) ?? collect([]);
     }
