@@ -9,6 +9,7 @@ class Cart extends Model
     protected $table = 'cart_items';
     protected $fillable = [
         'rowId',
+        'user_id',
         'price',
         'quantity',
         'cartable_id',
