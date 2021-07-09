@@ -35,8 +35,8 @@ class CartService
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
             ?$this->storage->all()->mapWithKeys(function ($item) {
-                return [$item["id"]=>[
-                    'id'            => $item['id'],
+                return [$item["rowId"]=>[
+                    'id'            => $item['rowId'],
                     'price'         => $item['price'],
                     'quantity'      => $item['quantity'],
                     'cartable_id'   => $item["cartable_id"],
