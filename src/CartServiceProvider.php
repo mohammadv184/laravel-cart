@@ -11,15 +11,10 @@ class CartServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/Config/cart.php', 'cart');
-        $this->loadMigrationsFrom(__DIR__."/Database/Migrations");
-
-        $this->app->singleton(
-            'cart',
-            function ($app) {
+        $this->app->singleton('cart', function ($app) {
                 $storage=\Auth::check()?new Cart():$app['session'];
                 return new CartService(config('cart.instanceName', 'cart'), $storage);
-            }
-        );
+        });
     }
 
     public function boot()
