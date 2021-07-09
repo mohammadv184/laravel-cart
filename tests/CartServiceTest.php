@@ -3,8 +3,8 @@
 use Mohammadv184\Cart\CartService;
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/helpers/SessionFake.php';
-require_once __DIR__ . '/helpers/ModelFake.php';
+require_once __DIR__.'/helpers/SessionFake.php';
+require_once __DIR__.'/helpers/ModelFake.php';
 class CartServiceTest extends TestCase
 {
     /**
