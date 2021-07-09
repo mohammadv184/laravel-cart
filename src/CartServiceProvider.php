@@ -4,6 +4,7 @@ namespace Mohammadv184\Cart;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Mohammadv184\Cart\Events\Logined;
@@ -41,7 +42,8 @@ class CartServiceProvider extends ServiceProvider
         );
         Event::listen(Logined::class, [MoveSessionToDatabase::class,"handle"]);
 
-        $kernel=$this->app->make(Kernel::class);
-        $kernel->pushMiddleware(CartIfLogin::class);
+        $router = $this->app->make(Router::class);
+        $router->pushMiddlewareToGroup('web', CartIfLogin::class);
+        $router->pushMiddlewareToGroup('api', CartIfLogin::class);
     }
 }
