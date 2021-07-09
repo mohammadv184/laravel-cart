@@ -2,14 +2,20 @@
 
 namespace Mohammadv184\Cart;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Mohammadv184\Cart\Events\Logined;
+use Mohammadv184\Cart\Listeners\MoveSessionToDatabase;
+use Mohammadv184\Cart\Middlewares\CartIfLogin;
 use Mohammadv184\Cart\Models\Cart;
 
 class CartServiceProvider extends ServiceProvider
 {
     public function register()
     {
+
         $this->mergeConfigFrom(__DIR__.'/Config/cart.php', 'cart');
         $this->app->singleton('cart', function ($app) {
                 $storage=\Auth::check()?new Cart():$app['session'];
@@ -19,6 +25,7 @@ class CartServiceProvider extends ServiceProvider
 
     public function boot()
     {
+
         $this->publishes(
             [
             __DIR__.'/Config/cart.php'=> config_path('cart.php'),
@@ -32,5 +39,9 @@ class CartServiceProvider extends ServiceProvider
             ],
             "migration"
         );
+        Event::listen(Logined::class, [MoveSessionToDatabase::class,"handle"]);
+
+        $kernel=$this->app->make(Kernel::class);
+        $kernel->pushMiddleware(CartIfLogin::class);
     }
 }

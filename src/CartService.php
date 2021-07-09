@@ -137,6 +137,15 @@ class CartService
     }
 
     /**
+     * @return bool
+     */
+    public function hasSession()
+    {
+        $session=\Session::get($this->instanceName)??collect([]);
+        return $session->isNotEmpty();
+    }
+
+    /**
      * Delete item.
      *
      * @param $key
