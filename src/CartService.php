@@ -35,13 +35,13 @@ class CartService
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
             ?$this->storage->all()->mapWithKeys(function ($item) {
-                return [
+                return [$item["id"]=>[
                     'id'            => $item['id'],
                     'price'         => $item['price'],
                     'quantity'      => $item['quantity'],
                     'cartable_id'   => $item["cartable_id"],
                     'cartable_type' => $item["cartable_type"],
-                ];
+                ]];
             })
             :$this->storage->get($this->instanceName) ?? collect([]);
     }
