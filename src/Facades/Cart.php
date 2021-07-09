@@ -15,6 +15,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  * @method static CartService update($value,$key)
  * @method static CartService has($key)
  * @method static Boolean hasSession()
+ * @method static CartService moveSessionToDatabase()
  * @method static CartService delete($key)
  * @method static CartService flush()
  * @method static array get($id,bool $withRelationShip=true)

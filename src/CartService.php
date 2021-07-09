@@ -144,6 +144,16 @@ class CartService
         $session=\Session::get($this->instanceName)??collect([]);
         return $session->isNotEmpty();
     }
+    public function moveSessionToDatabase()
+    {
+        if ($this->hasSession()&&$this->storage instanceof Model) {
+            $session=\Session::get($this->instanceName);
+            \Session::forget($this->instanceName);
+            $this->cart=$this->cart->merge($session->toArray());
+            $this->save();
+        }
+        return $this;
+    }
 
     /**
      * Delete item.
