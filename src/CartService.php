@@ -151,7 +151,7 @@ class CartService
         }
         $this->cart->forget($item['id']);
         if ($this->storage instanceof Model) {
-            $this->firstWhere("rowId", $key)->delete();
+            $this->storage->firstWhere("rowId", $key)->delete();
         } else {
             $this->save();
         }
