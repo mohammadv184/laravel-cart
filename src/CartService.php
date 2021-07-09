@@ -2,8 +2,10 @@
 
 namespace Mohammadv184\Cart;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Mohammadv184\Cart\Models\Cart;
 
 class CartService
 {
@@ -21,17 +23,19 @@ class CartService
     protected $instanceName = 'cart';
 
     /**
-     * the cart session.
+     * the cart storage.
      *
-     * @var
+     * @var Cart|\Session
      */
-    protected $session;
+    protected $storage;
 
-    public function __construct($instanceName, $session)
+    public function __construct($instanceName, $storage)
     {
         $this->instanceName = $instanceName;
-        $this->session = $session;
-        $this->cart = $this->session->get($this->instanceName) ?? collect([]);
+        $this->storage = $storage;
+        $this->cart = $this->storage instanceof Model
+            ?$this->storage->all()
+            :$this->storage->get($this->instanceName) ?? collect([]);
     }
 
     /**
@@ -138,8 +142,11 @@ class CartService
             return $this;
         }
         $this->cart->forget($item['id']);
-        $this->save();
-
+        if ($this->storage instanceof Model) {
+            $this->firstWhere("rowId", $key)->delete();
+        } else {
+            $this->save();
+        }
         return $this;
     }
 
@@ -151,8 +158,11 @@ class CartService
     public function flush(): CartService
     {
         $this->cart = collect([]);
-        $this->save();
-
+        if ($this->storage instanceof Model) {
+            $this->storage->truncate();
+        } else {
+            $this->save();
+        }
         return $this;
     }
 
@@ -187,9 +197,11 @@ class CartService
     public function all(bool $withRelationShip = true): Collection
     {
         return $withRelationShip
-            ? $this->cart->map(function ($item) {
-                return $this->withRelationShip($item);
-            })
+            ? $this->cart->map(
+                function ($item) {
+                    return $this->withRelationShip($item);
+                }
+            )
             : $this->cart;
     }
 
@@ -218,9 +230,11 @@ class CartService
      */
     public function totalPrice(): int
     {
-        return $this->all()->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
+        return $this->all()->sum(
+            function ($item) {
+                return $item['price'] * $item['quantity'];
+            }
+        );
     }
 
     /**
@@ -228,6 +242,33 @@ class CartService
      */
     protected function save(): void
     {
-        $this->session->put([$this->instanceName => $this->cart]);
+        if ($this->storage instanceof Model) {
+            $this->cart->each(
+                function ($item) {
+                    if ($cart=$this->storage->has($item["id"])) {
+                        $cart->update(
+                            [
+                            "rowId"=>$item["id"],
+                            "price"=>$item["price"],
+                            "quantity"=>$item["quantity"],
+                            "cartable_id"=>$item["cartable_id"],
+                            "cartable_type"=>$item["cartable_type"]
+                            ]
+                        );
+                    }
+                    $this->storage->create(
+                        [
+                        "rowId"=>$item["id"],
+                        "price"=>$item["price"],
+                        "quantity"=>$item["quantity"],
+                        "cartable_id"=>$item["cartable_id"],
+                        "cartable_type"=>$item["cartable_type"]
+                        ]
+                    );
+                }
+            );
+        } else {
+            $this->storage->put([$this->instanceName => $this->cart]);
+        }
     }
 }
