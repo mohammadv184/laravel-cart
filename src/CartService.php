@@ -34,16 +34,16 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
-            ?$this->storage->all()->mapWithKeys(function ($item) {
-                return [$item["rowId"]=>[
+            ? $this->storage->all()->mapWithKeys(function ($item) {
+                return [$item['rowId']=> [
                     'id'            => $item['rowId'],
                     'price'         => $item['price'],
                     'quantity'      => $item['quantity'],
-                    'cartable_id'   => $item["cartable_id"],
-                    'cartable_type' => $item["cartable_type"],
+                    'cartable_id'   => $item['cartable_id'],
+                    'cartable_type' => $item['cartable_type'],
                 ]];
             })
-            :$this->storage->get($this->instanceName) ?? collect([]);
+            : $this->storage->get($this->instanceName) ?? collect([]);
     }
 
     /**
@@ -141,17 +141,20 @@ class CartService
      */
     public function hasSession()
     {
-        $session=\Session::get($this->instanceName)??collect([]);
+        $session = \Session::get($this->instanceName) ?? collect([]);
+
         return $session->isNotEmpty();
     }
+
     public function moveSessionToDatabase()
     {
-        if ($this->hasSession()&&$this->storage instanceof Model) {
-            $session=\Session::get($this->instanceName);
+        if ($this->hasSession() && $this->storage instanceof Model) {
+            $session = \Session::get($this->instanceName);
             \Session::forget($this->instanceName);
-            $this->cart=$this->cart->merge($session->toArray());
+            $this->cart = $this->cart->merge($session->toArray());
             $this->save();
         }
+
         return $this;
     }
 
@@ -170,10 +173,11 @@ class CartService
         }
         $this->cart->forget($item['id']);
         if ($this->storage instanceof Model) {
-            $this->storage->firstWhere("rowId", $key)->delete();
+            $this->storage->firstWhere('rowId', $key)->delete();
         } else {
             $this->save();
         }
+
         return $this;
     }
 
@@ -190,6 +194,7 @@ class CartService
         } else {
             $this->save();
         }
+
         return $this;
     }
 
@@ -272,24 +277,24 @@ class CartService
         if ($this->storage instanceof Model) {
             $this->cart->each(
                 function ($item) {
-                    if ($cart=$this->storage->has($item["id"])) {
+                    if ($cart = $this->storage->has($item['id'])) {
                         $cart->update(
                             [
-                            "rowId"=>$item["id"],
-                            "price"=>$item["price"],
-                            "quantity"=>$item["quantity"],
-                            "cartable_id"=>$item["cartable_id"],
-                            "cartable_type"=>$item["cartable_type"]
+                                'rowId'        => $item['id'],
+                                'price'        => $item['price'],
+                                'quantity'     => $item['quantity'],
+                                'cartable_id'  => $item['cartable_id'],
+                                'cartable_type'=> $item['cartable_type'],
                             ]
                         );
                     } else {
                         $this->storage->create(
                             [
-                            "rowId"=>$item["id"],
-                            "price"=>$item["price"],
-                            "quantity"=>$item["quantity"],
-                            "cartable_id"=>$item["cartable_id"],
-                            "cartable_type"=>$item["cartable_type"]
+                                'rowId'        => $item['id'],
+                                'price'        => $item['price'],
+                                'quantity'     => $item['quantity'],
+                                'cartable_id'  => $item['cartable_id'],
+                                'cartable_type'=> $item['cartable_type'],
                             ]
                         );
                     }
