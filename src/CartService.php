@@ -144,7 +144,15 @@ class CartService
         if ($this->hasSession() && $this->storage instanceof Model) {
             $session = \Session::get($this->instanceName);
             \Session::forget($this->instanceName);
-            $this->cart = $this->cart->merge($session->toArray());
+            $session->each(function ($item) {
+                $cart=$this->cart->where("cartable_id", $item["cartable_id"])->where("cartable_type", $item["cartable_type"])->first();
+                if (!is_null($cart)) {
+                    $item["id"]=$cart["id"];
+                    $item["quantity"]+=$cart["quantity"];
+                    $item["price"]=$cart["price"];
+                }
+                $this->cart->put($item["id"], $item);
+            });
             $this->save();
         }
 
