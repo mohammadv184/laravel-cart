@@ -35,7 +35,7 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
-            ? $this->storage->mapWithKeys(function ($item) {
+            ? $this->storage->all()->mapWithKeys(function ($item) {
                 if ($item["user_id"]==\Auth::user()->id) {
                     return [$item['rowId'] => [
                         'id' => $item['rowId'],
