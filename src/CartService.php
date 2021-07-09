@@ -15,6 +15,7 @@ class CartService
      * @var Collection
      */
     protected $cart;
+
     /**
      * the cart session key.
      *
@@ -34,7 +35,7 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->cart = $this->storage instanceof Model
-            ? $this->storage->all()->mapWithKeys(function ($item) {
+            ? $this->storage->newQuery()->where("user_id", \Auth::user()->id)->mapWithKeys(function ($item) {
                 return [$item['rowId']=> [
                     'id'            => $item['rowId'],
                     'price'         => $item['price'],
@@ -83,20 +84,6 @@ class CartService
     }
 
     /**
-     * set instance name.
-     *
-     * @param $instanceName
-     *
-     * @return $this
-     */
-    public function instance($instanceName): CartService
-    {
-        $this->instanceName = $instanceName;
-
-        return $this;
-    }
-
-    /**
      * Update cart values.
      *
      * @param $value
@@ -137,6 +124,7 @@ class CartService
     }
 
     /**
+     * check if exists session
      * @return bool
      */
     public function hasSession()
@@ -146,6 +134,10 @@ class CartService
         return $session->isNotEmpty();
     }
 
+    /**
+     * Move session to database
+     * @return $this
+     */
     public function moveSessionToDatabase()
     {
         if ($this->hasSession() && $this->storage instanceof Model) {
@@ -173,7 +165,7 @@ class CartService
         }
         $this->cart->forget($item['id']);
         if ($this->storage instanceof Model) {
-            $this->storage->firstWhere('rowId', $key)->delete();
+            $this->storage->where("id",\Auth::user()->id)->firstWhere('rowId', $key)->delete();
         } else {
             $this->save();
         }
@@ -190,7 +182,7 @@ class CartService
     {
         $this->cart = collect([]);
         if ($this->storage instanceof Model) {
-            $this->storage->truncate();
+            $this->storage->where("id", \Auth::user()->id)->delete();
         } else {
             $this->save();
         }
@@ -291,6 +283,7 @@ class CartService
                         $this->storage->create(
                             [
                                 'rowId'        => $item['id'],
+                                'user_id'      => \Auth::user()->id,
                                 'price'        => $item['price'],
                                 'quantity'     => $item['quantity'],
                                 'cartable_id'  => $item['cartable_id'],

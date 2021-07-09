@@ -50,21 +50,6 @@ class CartServiceTest extends TestCase
     }
 
     /**
-     *test Cart Instance method.
-     */
-    public function testInstance()
-    {
-        $this->cart->instance('test');
-        $this->assertEquals('test', $this->cart->getInstanceName());
-
-        $this->cart->instance('shop');
-        $this->assertEquals('shop', $this->cart->getInstanceName());
-
-        $this->cart->instance('!QAZ1qaz');
-        $this->assertEquals('!QAZ1qaz', $this->cart->getInstanceName());
-    }
-
-    /**
      *test Cart Update method.
      */
     public function testUpdate()
