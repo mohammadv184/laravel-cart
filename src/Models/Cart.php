@@ -19,7 +19,7 @@ class Cart extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table=config("cart.table", "cart_items");
+        $this->table = config('cart.table', 'cart_items');
     }
 
     public function cartable()
