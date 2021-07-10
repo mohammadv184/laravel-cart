@@ -13,7 +13,7 @@ class CreateCartItems extends Migration
      */
     public function up()
     {
-        Schema::create('cart_items', function (Blueprint $table) {
+        Schema::create(config("cart.table", "cart_items"), function (Blueprint $table) {
             $table->id();
             $table->string('rowId');
             $table->unsignedBigInteger('user_id');
@@ -33,6 +33,6 @@ class CreateCartItems extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cart_items');
+        Schema::dropIfExists(config("cart.table", "cart_items"));
     }
 }
