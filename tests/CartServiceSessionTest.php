@@ -1,11 +1,11 @@
 <?php
+namespace Mohammadv184\Cart\Tests;
 
+use Mohammadv184\Cart\Tests\helpers\ModelFake;
 use Mohammadv184\Cart\CartService;
-use PHPUnit\Framework\TestCase;
+use Mohammadv184\Cart\Tests\helpers\SessionFake;
 
-require_once __DIR__.'/helpers/SessionFake.php';
-require_once __DIR__.'/helpers/ModelFake.php';
-class CartServiceTest extends TestCase
+class CartServiceSessionTest extends TestCase
 {
     /**
      * @var CartService
@@ -22,7 +22,7 @@ class CartServiceTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->cart = new CartService('cart', new SessionFake());
+        $this->cart = new CartService('cart', new SessionFake(), "session");
         $this->model = new ModelFake();
     }
 
@@ -65,7 +65,7 @@ class CartServiceTest extends TestCase
             'quantity'      => 950,
             'price'         => 1000,
             'cartable_id'   => 1,
-            'cartable_type' => 'ModelFake',
+            'cartable_type' => 'Mohammadv184\Cart\Tests\helpers\ModelFake',
         ], $this->cart->get($this->model, false));
 
         $this->cart->update([
@@ -79,7 +79,7 @@ class CartServiceTest extends TestCase
             'quantity'      => 960,
             'price'         => 0,
             'cartable_id'   => 1,
-            'cartable_type' => 'ModelFake',
+            'cartable_type' => 'Mohammadv184\Cart\Tests\helpers\ModelFake',
         ], $this->cart->get($this->model, false));
     }
 
@@ -179,7 +179,7 @@ class CartServiceTest extends TestCase
             'quantity'      => 50,
             'price'         => 1,
             'cartable_id'   => 3,
-            'cartable_type' => 'ModelFake',
+            'cartable_type' => 'Mohammadv184\Cart\Tests\helpers\ModelFake',
         ], $this->cart->get('test3', false));
         $this->model->id = 2;
         $this->assertEquals([
@@ -187,7 +187,7 @@ class CartServiceTest extends TestCase
             'quantity'      => 9508,
             'price'         => 384,
             'cartable_id'   => 2,
-            'cartable_type' => 'ModelFake',
+            'cartable_type' => 'Mohammadv184\Cart\Tests\helpers\ModelFake',
             'modelfake'     => $this->model,
 
         ], $this->cart->get('test2'));
@@ -223,7 +223,7 @@ class CartServiceTest extends TestCase
             'price'         => 1,
             'quantity'      => 50,
             'cartable_id'   => 3,
-            'cartable_type' => 'ModelFake',
+            'cartable_type' => 'Mohammadv184\Cart\Tests\helpers\ModelFake',
             'modelfake'     => $this->model,
 
         ], $this->cart->all()['test3']);

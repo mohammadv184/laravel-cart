@@ -30,12 +30,27 @@ class CartService
      */
     protected $storage;
 
-    public function __construct($instanceName, $storage)
+    /**
+     * @var string
+     */
+    protected $connection;
+
+    /**
+     * @var mixed|null
+     */
+    protected $user;
+
+    public function __construct($instanceName, $storage, $connection, $user = null)
     {
         $this->instanceName = $instanceName;
         $this->storage = $storage;
-        $this->cart = $this->storage instanceof Model
-            ? $this->storage->all()->where('user_id', \Auth::user()->id)->mapWithKeys(function ($item) {
+        $this->connection = $connection;
+        $this->user=$user;
+        if ($this->connection=="database" && is_null($this->user)) {
+            throw new \Exception("user is required");
+        }
+        $this->cart = $this->connection=='database'
+            ? $this->storage->all()->where('user_id', $this->user->id)->mapWithKeys(function ($item) {
                 return [$item['rowId'] => [
                     'id'            => $item['rowId'],
                     'price'         => $item['price'],
@@ -142,7 +157,7 @@ class CartService
      */
     public function moveSessionToDatabase()
     {
-        if ($this->hasSession() && $this->storage instanceof Model) {
+        if ($this->hasSession() && $this->connection=="database") {
             $session = \Session::get($this->instanceName);
             \Session::forget($this->instanceName);
             $session->each(function ($item) {
@@ -174,8 +189,8 @@ class CartService
             return $this;
         }
         $this->cart->forget($item['id']);
-        if ($this->storage instanceof Model) {
-            $this->storage->where('id', \Auth::user()->id)->firstWhere('rowId', $key)->delete();
+        if ($this->connection=="database") {
+            $this->storage->where('user_id', $this->user->id)->firstWhere('rowId', $key)->delete();
         } else {
             $this->save();
         }
@@ -191,8 +206,8 @@ class CartService
     public function flush(): CartService
     {
         $this->cart = collect([]);
-        if ($this->storage instanceof Model) {
-            $this->storage->where('id', \Auth::user()->id)->delete();
+        if ($this->connection=='database') {
+            $this->storage->where('id', $this->user->id)->delete();
         } else {
             $this->save();
         }
@@ -276,7 +291,7 @@ class CartService
      */
     protected function save(): void
     {
-        if ($this->storage instanceof Model) {
+        if ($this->connection=='database') {
             $this->cart->each(
                 function ($item) {
                     if ($cart = $this->storage->has($item['id'])) {
@@ -293,7 +308,7 @@ class CartService
                         $this->storage->create(
                             [
                                 'rowId'        => $item['id'],
-                                'user_id'      => \Auth::user()->id,
+                                'user_id'      => $this->user->id,
                                 'price'        => $item['price'],
                                 'quantity'     => $item['quantity'],
                                 'cartable_id'  => $item['cartable_id'],
