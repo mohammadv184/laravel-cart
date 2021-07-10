@@ -1,6 +1,6 @@
 # laravel-cart
-[![Latest Stable Version](http://poser.pugx.org/mohammadv184/laravel-cart/v)](https://packagist.org/packages/mohammadv184/laravel-cart) 
-[![Total Downloads](http://poser.pugx.org/mohammadv184/laravel-cart/downloads)](https://packagist.org/packages/mohammadv184/laravel-cart) 
+[![Latest Stable Version](http://poser.pugx.org/mohammadv184/laravel-cart/v)](https://packagist.org/packages/mohammadv184/laravel-cart)
+[![Total Downloads](http://poser.pugx.org/mohammadv184/laravel-cart/downloads)](https://packagist.org/packages/mohammadv184/laravel-cart)
 [![Monthly Downloads](http://poser.pugx.org/mohammadv184/laravel-cart/d/monthly)](https://packagist.org/packages/mohammadv184/laravel-cart)
 [![Build Status](https://travis-ci.com/mohammadv184/laravel-cart.svg?branch=main)](https://travis-ci.com/mohammadv184/laravel-cart)
 [![License](http://poser.pugx.org/mohammadv184/laravel-cart/license)](https://packagist.org/packages/mohammadv184/laravel-cart)
@@ -29,11 +29,26 @@ And optionally add a new line to the `aliases` array:
 
 Now you're ready to start using the laravel-cart in your application.
 
+### Database
+To save cart into the database, the package needs to know which what the name of the table is.
+By default the package will use a table named `cart_items`.
+If you want to change these options, you'll have to publish the `config` file.
+
+    php artisan vendor:publish --provider="Mohammadv184\Cart\CartServiceProvider" --tag="config"
+
+This will give you a `cart.php` config file in which you can make the changes.
+
+To make your life easy, the package also includes a ready to use `migration` which you can publish by running:
+
+    php artisan vendor:publish --provider="Mohammadv184\Cart\CartServiceProvider" --tag="migrations"
+
+This will place a `cart_items` table's migration file into `database/migrations` directory. Now all you have to do is run `php artisan migrate` to migrate your database.
+
+
 ## Overview
 Look at one of the following topics to learn more about Laravel-cart
 
 * [Usage](#usage)
-* [Instances](#instances)
 * [Example](#example)
 
 ## Usage
@@ -134,27 +149,7 @@ The `totalPrice()` method can be used to get the totalPrice of all items in the 
 ```php
 Cart::totalPrice();
 ```
-## Instances
 
-The packages supports multiple instances of the cart. The way this works is like this:
-
-You can set the current instance of the cart by calling `Cart::instance('newInstance')`. From this moment, the active instance of the cart will be `newInstance`, so when you add, remove or get the content of the cart, you're work with the `newInstance` instance of the cart.
-If you want to switch instances, you just call `Cart::instance('otherInstance')` again, and you're working with the `otherInstance` again.
-
-So a little example:
-
-```php
-$product=Product::find(1);
-Cart::instance('shopping')->put(['quantity'=>1,'price'=>9.99],$product);
-// Get the all of the 'shopping' cart
-Cart::all();
-$product=Product::find(2);
-Cart::instance('wishlist')->put(['quantity'=>1,'price'=>2.5],$product);
-// Get the all of the 'wishlist' cart
-Cart::all();
-// If you want to get the all of the 'shopping' cart again
-Cart::instance('shopping')->all();
-```
 ## Example
 
 Below is a little example of how to list the cart content in a table:
