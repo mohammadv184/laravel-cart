@@ -17,8 +17,9 @@ class CartServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/Config/cart.php', 'cart');
         $this->app->singleton('cart', function ($app) {
             $storage = \Auth::check() ? new Cart() : $app['session'];
-            $connection = \Auth::check() ?'database': 'session';
-            $user=\Auth::user();
+            $connection = \Auth::check() ? 'database' : 'session';
+            $user = \Auth::user();
+
             return new CartService(config('cart.instanceName', 'cart'), $storage, $connection, $user);
         });
     }

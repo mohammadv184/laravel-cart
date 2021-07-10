@@ -1,4 +1,5 @@
 <?php
+
 namespace Mohammadv184\Cart\Tests\helpers;
 
 class ModelFake

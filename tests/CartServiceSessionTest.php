@@ -1,8 +1,9 @@
 <?php
+
 namespace Mohammadv184\Cart\Tests;
 
-use Mohammadv184\Cart\Tests\helpers\ModelFake;
 use Mohammadv184\Cart\CartService;
+use Mohammadv184\Cart\Tests\helpers\ModelFake;
 use Mohammadv184\Cart\Tests\helpers\SessionFake;
 
 class CartServiceSessionTest extends TestCase
@@ -22,7 +23,7 @@ class CartServiceSessionTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->cart = new CartService('cart', new SessionFake(), "session");
+        $this->cart = new CartService('cart', new SessionFake(), 'session');
         $this->model = new ModelFake();
     }
 
