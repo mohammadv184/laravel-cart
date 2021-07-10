@@ -45,11 +45,11 @@ class CartService
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->connection = $connection;
-        $this->user=$user;
-        if ($this->connection=="database" && is_null($this->user)) {
-            throw new \Exception("user is required");
+        $this->user = $user;
+        if ($this->connection == 'database' && is_null($this->user)) {
+            throw new \Exception('user is required');
         }
-        $this->cart = $this->connection=='database'
+        $this->cart = $this->connection == 'database'
             ? $this->storage->all()->where('user_id', $this->user->id)->mapWithKeys(function ($item) {
                 return [$item['rowId'] => [
                     'id'            => $item['rowId'],
@@ -157,7 +157,7 @@ class CartService
      */
     public function moveSessionToDatabase()
     {
-        if ($this->hasSession() && $this->connection=="database") {
+        if ($this->hasSession() && $this->connection == 'database') {
             $session = \Session::get($this->instanceName);
             \Session::forget($this->instanceName);
             $session->each(function ($item) {
@@ -189,7 +189,7 @@ class CartService
             return $this;
         }
         $this->cart->forget($item['id']);
-        if ($this->connection=="database") {
+        if ($this->connection == 'database') {
             $this->storage->where('user_id', $this->user->id)->firstWhere('rowId', $key)->delete();
         } else {
             $this->save();
@@ -206,7 +206,7 @@ class CartService
     public function flush(): CartService
     {
         $this->cart = collect([]);
-        if ($this->connection=='database') {
+        if ($this->connection == 'database') {
             $this->storage->where('id', $this->user->id)->delete();
         } else {
             $this->save();
@@ -291,7 +291,7 @@ class CartService
      */
     protected function save(): void
     {
-        if ($this->connection=='database') {
+        if ($this->connection == 'database') {
             $this->cart->each(
                 function ($item) {
                     if ($cart = $this->storage->has($item['id'])) {
