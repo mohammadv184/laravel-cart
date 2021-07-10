@@ -2,5 +2,5 @@
 
 return [
     'instanceName'=> 'cart',
-    'table'       => 'cart_items'
+    'table'       => 'cart_items',
 ];
