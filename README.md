@@ -130,11 +130,6 @@ Of course you also want to get the all items in cart. This is where you'll use t
 Cart::all();
 ```
 
-This method will return the all items of the current cart instance, if you want the all items of another instance, simply chain the calls.
-
-```php
-Cart::instance('wishlist')->all();
-```
 ### Cart::flush()
 
 If you want to completely delete the all items of a cart, you can call the flush method on the cart. This will delete all Cart Items from the cart for the current cart instance.
