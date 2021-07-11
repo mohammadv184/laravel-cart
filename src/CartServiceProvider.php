@@ -26,23 +26,27 @@ class CartServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->publishFiles();
+        Event::listen(Logined::class, [MoveSessionToDatabase::class, 'handle']);
+
+        $router = $this->app->make(Router::class);
+        $router->pushMiddlewareToGroup('web', CartIfLogin::class);
+        $router->pushMiddlewareToGroup('api', CartIfLogin::class);
+    }
+
+    private function publishFiles()
+    {
         $this->publishes(
             [
                 __DIR__.'/Config/cart.php'=> config_path('cart.php'),
             ],
             'config'
         );
-        $date = date('Y_m_d_His');
         $this->publishes(
             [
-                __DIR__.'/../Database/Migrations/0000_00_00_000000_create_Cart_Items_table.php'=> database_path('migrations/'.$date.'_create_cart_items.php'),
+                __DIR__.'/../Database/Migrations/0000_00_00_000000_create_Cart_Items_table.php'=> database_path('migrations/'.date('Y_m_d_His').'_create_cart_items.php'),
             ],
             'migrations'
         );
-        Event::listen(Logined::class, [MoveSessionToDatabase::class, 'handle']);
-
-        $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', CartIfLogin::class);
-        $router->pushMiddlewareToGroup('api', CartIfLogin::class);
     }
 }
