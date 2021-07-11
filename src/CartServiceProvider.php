@@ -27,11 +27,8 @@ class CartServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishFiles();
+        $this->setUpMiddleware();
         Event::listen(Logined::class, [MoveSessionToDatabase::class, 'handle']);
-
-        $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', CartIfLogin::class);
-        $router->pushMiddlewareToGroup('api', CartIfLogin::class);
     }
 
     private function publishFiles()
@@ -48,5 +45,12 @@ class CartServiceProvider extends ServiceProvider
             ],
             'migrations'
         );
+    }
+
+    private function setUpMiddleware()
+    {
+        $router = $this->app->make(Router::class);
+        $router->pushMiddlewareToGroup('web', CartIfLogin::class);
+        $router->pushMiddlewareToGroup('api', CartIfLogin::class);
     }
 }
