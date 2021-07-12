@@ -51,6 +51,9 @@ class CartService
      */
     protected $sessionStatus;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct($instanceName, $storage, $connection, $user = null, $sessionStatus = true)
     {
         $this->instanceName = $instanceName;
@@ -58,10 +61,8 @@ class CartService
         $this->connection = $connection;
         $this->user = $user;
         $this->sessionStatus = $sessionStatus;
-        if ($this->connection == 'database' && is_null($this->user)) {
-            throw new \Exception('user is required');
-        }
-        $this->cart = $this->connection == 'database'
+        $session = $this->storage->get($this->instanceName) ?? collect([]);
+        $cart = $this->connection == 'database'
             ? $this->storage->all()->where('user_id', $this->user->id)->mapWithKeys(function ($item) {
                 return [$item['rowId'] => [
                     'id'            => $item['rowId'],
@@ -70,8 +71,12 @@ class CartService
                     'cartable_id'   => $item['cartable_id'],
                     'cartable_type' => $item['cartable_type'],
                 ]];
-            })
-            : $this->storage->get($this->instanceName) ?? collect([]);
+            })->toArray()
+            : $session->toArray();
+        $this->cart=collect($cart);
+        if ($this->connection == 'database' && is_null($this->user)) {
+            throw new \Exception('user is required');
+        }
     }
 
     /**
