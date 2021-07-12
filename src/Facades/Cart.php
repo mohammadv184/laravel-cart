@@ -20,7 +20,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  * @method static CartService flush()
  * @method static array get($id,bool $withRelationShip=true)
  * @method static Collection all(bool $withRelationShip=true)
- * @method static int totalPrice()
+ * @method static int totalPrice(bool $withNumberFormat = false)
  * @method static CartService instance($instanceName)
  *
  * @see \Mohammadv184\Cart\CartService

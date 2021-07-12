@@ -254,5 +254,6 @@ class CartServiceSessionTest extends TestCase
         ], $this->model);
 
         $this->assertEquals(12444220, $this->cart->totalPrice());
+        $this->assertEquals("12,444,220", $this->cart->totalPrice(true));
     }
 }

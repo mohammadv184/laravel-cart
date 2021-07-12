@@ -273,17 +273,21 @@ class CartService
     }
 
     /**
-     * Totla cart price.
+     * Total cart price.
      *
-     * @return int
+     * @param bool $withNumberFormat
+     * @return int | string
      */
-    public function totalPrice(): int
+    public function totalPrice(bool $withNumberFormat = false)
     {
-        return $this->all()->sum(
+        $total=$this->all()->sum(
             function ($item) {
                 return $item['price'] * $item['quantity'];
             }
         );
+        return $withNumberFormat
+            ? number_format($total)
+            : $total;
     }
 
     /**
