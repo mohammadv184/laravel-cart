@@ -31,11 +31,15 @@ class CartService
     protected $storage;
 
     /**
+     * the cart connection
+     *
      * @var string
      */
     protected $connection;
 
     /**
+     * the user model
+     *
      * @var mixed|null
      */
     protected $user;
@@ -263,12 +267,8 @@ class CartService
      */
     protected function withRelationShip($value): array
     {
-        if (isset($value['cartable_id']) && isset($value['cartable_type'])) {
-            $model = (new $value['cartable_type']())->find($value['cartable_id']);
-
-            $value[strtolower(class_basename($model))] = $model;
-        }
-
+        $model = (new $value['cartable_type']())->find($value['cartable_id']);
+        $value[strtolower(class_basename($model))] = $model;
         return $value;
     }
 
