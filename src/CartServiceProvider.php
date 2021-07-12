@@ -19,8 +19,8 @@ class CartServiceProvider extends ServiceProvider
             $storage = \Auth::check() ? new Cart() : $app['session'];
             $connection = \Auth::check() ? 'database' : 'session';
             $user = \Auth::user();
-
-            return new CartService(config('cart.instanceName', 'cart'), $storage, $connection, $user);
+            $sessionStatus = config('cart.session');
+            return new CartService(config('cart.instanceName', 'cart'), $storage, $connection, $user, $sessionStatus);
         });
     }
 
