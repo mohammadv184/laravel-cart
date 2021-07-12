@@ -61,7 +61,6 @@ class CartService
         $this->connection = $connection;
         $this->user = $user;
         $this->sessionStatus = $sessionStatus;
-        $session = $this->storage->get($this->instanceName) ?? collect([]);
         $cart = $this->connection == 'database'
             ? $this->storage->all()->where('user_id', $this->user->id)->mapWithKeys(function ($item) {
                 return [$item['rowId'] => [
@@ -72,7 +71,7 @@ class CartService
                     'cartable_type' => $item['cartable_type'],
                 ]];
             })->toArray()
-            : $session->toArray();
+            : ($this->storage->get($this->instanceName) ?? collect([]))->toArray();
         $this->cart = collect($cart);
         if ($this->connection == 'database' && is_null($this->user)) {
             throw new \Exception('user is required');
