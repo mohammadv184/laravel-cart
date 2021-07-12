@@ -73,7 +73,7 @@ class CartService
                 ]];
             })->toArray()
             : $session->toArray();
-        $this->cart=collect($cart);
+        $this->cart = collect($cart);
         if ($this->connection == 'database' && is_null($this->user)) {
             throw new \Exception('user is required');
         }
