@@ -44,12 +44,20 @@ class CartService
      */
     protected $user;
 
-    public function __construct($instanceName, $storage, $connection, $user = null)
+    /**
+     * the session status
+     *
+     * @var mixed|null
+     */
+    protected $sessionStatus;
+
+    public function __construct($instanceName, $storage, $connection, $user = null, $sessionStatus = true)
     {
         $this->instanceName = $instanceName;
         $this->storage = $storage;
         $this->connection = $connection;
         $this->user = $user;
+        $this->sessionStatus=$sessionStatus;
         if ($this->connection == 'database' && is_null($this->user)) {
             throw new \Exception('user is required');
         }
@@ -322,7 +330,7 @@ class CartService
                     }
                 }
             );
-        } else {
+        } elseif ($this->sessionStatus) {
             $this->storage->put([$this->instanceName => $this->cart]);
         }
     }

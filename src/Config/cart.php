@@ -22,4 +22,14 @@ return [
    |
    */
     'table'       => 'cart_items',
+
+    /*
+   |--------------------------------------------------------------------------
+   | laravel cart session storage
+   |--------------------------------------------------------------------------
+   |
+   | laravel cart session storage status when the user is guest
+   |
+   */
+    'session'     => true,
 ];
