@@ -31,21 +31,21 @@ class CartService
     protected $storage;
 
     /**
-     * the cart connection
+     * the cart connection.
      *
      * @var string
      */
     protected $connection;
 
     /**
-     * the user model
+     * the user model.
      *
      * @var mixed|null
      */
     protected $user;
 
     /**
-     * the session status
+     * the session status.
      *
      * @var mixed|null
      */
@@ -57,7 +57,7 @@ class CartService
         $this->storage = $storage;
         $this->connection = $connection;
         $this->user = $user;
-        $this->sessionStatus=$sessionStatus;
+        $this->sessionStatus = $sessionStatus;
         if ($this->connection == 'database' && is_null($this->user)) {
             throw new \Exception('user is required');
         }
@@ -277,6 +277,7 @@ class CartService
     {
         $model = (new $value['cartable_type']())->find($value['cartable_id']);
         $value[strtolower(class_basename($model))] = $model;
+
         return $value;
     }
 
@@ -284,15 +285,17 @@ class CartService
      * Total cart price.
      *
      * @param bool $withNumberFormat
+     *
      * @return int | string
      */
     public function totalPrice(bool $withNumberFormat = false)
     {
-        $total=$this->all()->sum(
+        $total = $this->all()->sum(
             function ($item) {
                 return $item['price'] * $item['quantity'];
             }
         );
+
         return $withNumberFormat
             ? number_format($total)
             : $total;
