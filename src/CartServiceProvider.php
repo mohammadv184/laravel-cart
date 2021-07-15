@@ -42,9 +42,7 @@ class CartServiceProvider extends ServiceProvider
         );
         $this->publishes(
             [
-                __DIR__.'/../Database/Migrations/0000_00_00_000000_create_Cart_Items_table.php'
-                =>
-                database_path('migrations/'.date('Y_m_d_His').'_create_cart_items.php'),
+                __DIR__.'/../Database/Migrations/0000_00_00_000000_create_Cart_Items_table.php' => database_path('migrations/'.date('Y_m_d_His').'_create_cart_items.php'),
             ],
             'migrations'
         );
