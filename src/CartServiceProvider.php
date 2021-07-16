@@ -15,6 +15,7 @@ class CartServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/Config/cart.php', 'cart');
+
         $this->app->singleton('cart', function ($app) {
             $storage = \Auth::check() ? new Cart() : $app['session'];
             $connection = \Auth::check() ? 'database' : 'session';
@@ -36,7 +37,7 @@ class CartServiceProvider extends ServiceProvider
     {
         $this->publishes(
             [
-                __DIR__.'/Config/cart.php'=> config_path('cart.php'),
+                __DIR__.'/../Config/cart.php'=> config_path('cart.php'),
             ],
             'config'
         );
