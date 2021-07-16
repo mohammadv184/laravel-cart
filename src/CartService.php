@@ -54,13 +54,13 @@ class CartService
     /**
      * @throws \Exception
      */
-    public function __construct($instanceName, $storage, $connection, $user = null, $sessionStatus = true)
+    public function __construct(array $config, $storage, $connection, $user = null)
     {
-        $this->instanceName = $instanceName;
+        $this->instanceName = $config["instanceName"] ?? 'cart';
         $this->storage = $storage;
         $this->connection = $connection;
         $this->user = $user;
-        $this->sessionStatus = $sessionStatus;
+        $this->sessionStatus = $config['sessionStatus'] ?? false;
         $cart = $this->connection == 'database'
             ? $this->storage->all()->where('user_id', $this->user->id)->mapWithKeys(function ($item) {
                 return [$item['rowId'] => [
