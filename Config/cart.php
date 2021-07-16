@@ -31,5 +31,5 @@ return [
    | laravel cart session storage status when the user is guest
    |
    */
-    'session'     => true,
+    'sessionStatus'     => true,
 ];
