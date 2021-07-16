@@ -20,13 +20,14 @@ class CartServiceSessionTest extends TestCase
 
     /**
      *setup test method.
+     *
      * @throws \Exception
      */
     protected function setUp(): void
     {
-        $config=[
-            'instanceName'=> 'cart',
-            'sessionStatus'=> false
+        $config = [
+            'instanceName' => 'cart',
+            'sessionStatus'=> false,
         ];
         $this->cart = new CartService($config, new SessionFake(), 'session');
         $this->model = new ModelFake();

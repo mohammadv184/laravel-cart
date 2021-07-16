@@ -56,7 +56,7 @@ class CartService
      */
     public function __construct(array $config, $storage, $connection, $user = null)
     {
-        $this->instanceName = $config["instanceName"] ?? 'cart';
+        $this->instanceName = $config['instanceName'] ?? 'cart';
         $this->storage = $storage;
         $this->connection = $connection;
         $this->user = $user;
