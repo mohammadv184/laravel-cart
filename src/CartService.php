@@ -124,17 +124,17 @@ class CartService
      */
     public function update($value, $key): CartService
     {
-        $item = collect($this->get($key, false));
-        if ($item->isEmpty()) {
+        $item = $this->get($key, false);
+        if (empty($item)) {
             return $this;
         }
         if (is_numeric($value)) {
             $item['quantity'] = $value;
         } else {
             $this->cart->forget($item['id']);
-            $item = $item->merge($value);
+            $item = array_merge($item, $value);
         }
-        $this->cart->put($item['id'], $item->toArray());
+        $this->cart->put($item['id'], $item);
         $this->save();
 
         return $this;
