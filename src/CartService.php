@@ -52,9 +52,10 @@ class CartService
     protected $sessionStatus;
 
     /**
+     * Cart Constructor
      * @throws \Exception
      */
-    public function __construct(array $config, $storage, $connection, $user = null)
+    public function __construct(array $config, $storage, $connection, $user =null)
     {
         $this->instanceName = $config['instanceName'] ?? 'cart';
         $this->storage = $storage;
